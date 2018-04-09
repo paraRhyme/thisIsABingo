@@ -1,0 +1,30 @@
+{
+  "name": "thisisabingo",
+  "version": "1.0.0",
+  "description": "Bingo-Spiel für WE1",
+  "main": "server.js",
+  "directories": {
+    "doc": "doc"
+  },
+  "scripts": {
+    "test": "node server.js",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/paraRhyme/thisIsABingo.git"
+  },
+  "keywords": [
+    "Bingo",
+    "Game",
+    "Javascript",
+    "HTML",
+    "WE1"
+  ],
+  "author": "paraRhyme",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/paraRhyme/thisIsABingo/issues"
+  },
+  "homepage": "https://github.com/paraRhyme/thisIsABingo#readme"
+}
