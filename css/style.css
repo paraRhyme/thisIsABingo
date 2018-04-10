@@ -1,0 +1,71 @@
+/** Global **/
+
+@bar-height: 100px;
+
+body {
+	margin: 0;
+	--footer-height: 100px;
+	--sidebar-width: 250px;
+}
+
+/* <----- Main-Grid -----> */
+
+.page {
+	display: grid;
+	grid-template-rows: auto var(--footer-height);
+	grid-template-columns: 1fr var(--sidebar_width);
+	height: 100vh;
+}
+
+/* <----- Content -----> */
+
+#content {
+	background: #111;
+}
+
+.welcome {}
+
+.open-room {}
+
+.join-room {}
+
+.wordsets {}
+
+.playroom {
+	display: none;
+}
+
+.playfield {
+	display: grid;
+	grid-template-rows: 1fr 1fr 1fr 1fr;
+	grid-template-columns: 1fr 1fr 1fr 1fr;
+}
+
+.playbox {}
+
+/* <----- Sidebar -----> */
+
+#sidebar {
+	background: #222;
+	display: grid;
+	grid-template-columns: 10px auto;
+}
+
+.panel {
+	display: grid;
+	height: calc(~"100vh -" var(--footer-height));
+}
+
+/* <----- Footer -----> */
+
+#footer {
+	background: #333;
+	grid-column-start: 1;
+	grid-column-end: 3;
+}
+
+/* <----- Interaktiva -----> */
+
+.toggle {}
+
+.contextbuttons {}
