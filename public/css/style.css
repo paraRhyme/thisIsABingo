@@ -1,0 +1,74 @@
+/** Global **/
+
+body {
+	display: flex;
+	min-height: 100vh;
+	flex-direction: column;
+}
+
+header {
+	margin: 0 auto;
+	max-width: 1280px;
+	width: 85%;
+}
+
+main {
+	/* flex: 1 0 auto; */
+	flex: 1 0 auto;
+	margin: 5px auto 5px auto;
+	max-width: 1280px;
+	width: 85%;
+	transition: box-shadow .25s, -webkit-box-shadow .25s;
+	border-radius: 2px;
+	box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14),0 3px 1px -2px rgba(0,0,0,0.12),0 1px 5px 0 rgba(0,0,0,0.2);
+}
+
+footer {
+	margin: 0 auto;
+	max-width: 1280px;
+	width: 85%;
+}
+
+
+.footer-copyright {
+	min-height: 10px!important;
+	padding: 0!important;
+}
+
+.footer-copyright .row {
+	margin: 3px auto;
+}
+
+
+
+#eingangspunkt .row .col.m9 {
+	max-width: 750px!important;
+}
+
+#spielerImRaum {
+	height: 70vh;
+	overflow-y: auto;
+}
+
+#spielfeld {
+	width: 100%
+	min-height: 60vw;
+	max-height: calc(1280px * 0.6);
+}
+
+#spielfeld .card-panel {
+	max-width: 100px;
+	max-height: 100px;
+	min-width: 75px;
+	min-width: 75px;
+	width: 10vw;
+	height: 10vw;
+	margin: 3px;
+	padding: 3px;
+}
+
+#spielfeld span {
+	margin: auto;
+	word-wrap: break-word;
+	word-break: break-all;
+}
