@@ -29,6 +29,9 @@ footer {
 	width: 85%;
 }
 
+footer a {
+	width: 100%!important;
+}
 
 .footer-copyright {
 	min-height: 10px!important;
@@ -50,6 +53,17 @@ footer {
 	overflow-y: auto;
 }
 
+#spielerImRaum .card {
+	width: 175px!important;
+}
+
+#spielerImRaum .row .col.m2 {
+	width: 21px;
+	height: 21px;
+	border: 1px black solid;
+	border-radius: 2px;
+}
+
 #spielfeld {
 	width: 100%
 	min-height: 60vw;
@@ -57,6 +71,7 @@ footer {
 }
 
 #spielfeld .card-panel {
+	cursor: pointer;
 	max-width: 100px;
 	max-height: 100px;
 	min-width: 75px;
@@ -67,8 +82,25 @@ footer {
 	padding: 3px;
 }
 
+.centerer {
+    display: inline-block;
+    height: 100%;
+    vertical-align: middle;
+}
+
 #spielfeld span {
-	margin: auto;
+	margin: auto!important;
 	word-wrap: break-word;
 	word-break: break-all;
+	vertical-align: middle;
+  display: inline-block;
+}
+
+.input-field {
+	margin-top: 0!important;
+}
+
+.collection {
+	max-height: 220px;
+	overflow: auto!important;
 }
