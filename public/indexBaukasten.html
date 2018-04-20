@@ -25,39 +25,19 @@
 		<div class="container">
 			<div class="card-panel">
 				<div class="section">
-					<div id="konfigInput" class="input-field">
-						<select>
-							<option value=""  selected>Choose your option</option>
-							<option value="1">Option 1</option>
-							<option value="2">Option 2</option>
-							<option value="3">Option 3</option>
-						</select>
-						<label>| 35 Wörter im Set |</label>
+					<div class="input-field">
+						<select id="konfigInput"></select>
+						<label id="konfigWordcount">| Setname: Testottttt | Spieler: 34234 |</label>
 					</div>
-					<div id="konfigCollection" class="collection">
-						<a href="#!" class="collection-item">Alvin</a>
-						<a href="#!" class="collection-item active">Alvin</a>
-						<a href="#!" class="collection-item">Alvin</a>
-						<a href="#!" class="collection-item">Alvin</a>
-						<a href="#!" class="collection-item">Alvin</a>
-						<a href="#!" class="collection-item">Alvin</a>
-						<a href="#!" class="collection-item">Alvin</a>
-					</div>
-					<a class="waves-effect waves-light btn red">Ausgewähltes Wort löschen</a>
 				</div>
 				<div class="divider"></div>
 				<div class="section">
 					<div class="row">
-						<div id="konfigNewWord" class="input-field col m8">
-	          	<input id="last_name" type="text" class="validate">
-	          	<label for="last_name">Neues Wort</label>
-	        	</div>
-							<a class="waves-effect waves-light btn green lighten-2 col m4 left">Wort hinzufügen</a>
-						<div id="konfigNewWordset" class="input-field col m8">
-	          	<input id="last_name" type="text" class="validate">
-	          	<label for="last_name">Neuer Wortsatz</label>
-	        	</div>
-							<a class="waves-effect waves-light btn green lighten-2 col m4">Wortsatz erstellen</a>
+						<div class="input-field col m8">
+							<input id="konfigNewWordset" type="text" class="validate">
+							<label for="konfigNewWordset">Spielername</label>
+						</div>
+						<a id="buttonAddWordset" class="waves-effect waves-light btn green lighten-2 col m4">Raum betreten</a>
 					</div>
 				</div>
 			</div>

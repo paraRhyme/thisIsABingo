@@ -39,6 +39,47 @@ function welcomeInit() {
 }
 
 
+/** ERSTELLEN **/
+
+
+/** BEITRETEN **/
+
+var erstellenInput;
+var erstellenStats;
+var erstellenSpielername;
+
+function beitretenInit() {
+  clearElement(eingangspunkt);
+  clearElement(buttons);
+  eingangspunkt.innerHTML = `
+  <div class="container">
+    <div class="card-panel">
+      <div class="section">
+        <div class="input-field">
+          <select id="erstellenInput"></select>
+          <label id="erstellenStats">| Setname: Testottttt | Spieler: 34234 |</label>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <div class="section">
+        <div class="row">
+          <div class="input-field col m8">
+            <input id="erstellenSpielername" type="text" class="validate">
+            <label for="erstellenSpielername">Spielername</label>
+          </div>
+          <a id="buttonRaumBetreten" class="waves-effect waves-light btn green lighten-2 col m4">Raum betreten</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  `;
+  erstellenInput = element("erstellenInput");
+  erstellenStats = element("erstellenStats");
+  erstellenSpielername = element("erstellenSpielername");
+  footerCreateButton("Hauptmenü", "m12", "green lighten-2", welcomeInit);
+}
+
+
 /** SPIELRAUM **/
 
 var spielerImRaum = document.createElement('ul');
@@ -216,8 +257,12 @@ function konfigDrawWordsets(sets) {
 
 function konfigDrawWords(words) {
   clearElement(konfigCollection);
-  if (words == null) {return;}
+
   var konfigWordcount = element("konfigWordcount");
+  if (words == null) {
+    konfigWordcount.innerHTML = "| 0 Wörter im Set |";
+    return;
+  }
   if (words.length == 1) {
     konfigWordcount.innerHTML = "| 1 Wort im Set |";
   } else {
@@ -255,12 +300,8 @@ function footerDrawStats(data){
     rooms = data.rooms;
     players = data.players;
   }
-  if(guests < 2){
-    element('numberOfGuests').textContent='| 1 Gast |';
-  } else {
-    element('numberOfGuests').textContent='| ' + guests + ' Gäste |';
-  }
-  element('numberOfRooms').textContent='| ' + rooms + ' Räume |';
+  if(guests == 1){element('numberOfGuests').textContent='| 1 Gast |';} else {element('numberOfGuests').textContent='| ' + guests + ' Gäste |';}
+  if(rooms == 1){element('numberOfRooms').textContent='| 1 Raum |';} else {element('numberOfRooms').textContent='| ' + rooms + ' Räume |';}
   element('numberOfPlayers').textContent='| ' + players + ' Spieler |';
 }
 

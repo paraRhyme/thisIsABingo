@@ -13,15 +13,18 @@ app.get('/', function(req, res,next) {
 });
 
 
-var wordsets = {};
-
-
 /** Emitter **/
 
 function sendStats(){
+  var allUsers = 0;
+  var players = 0;
+  var rooms = 0;
   for (var key in currentConnections){
-    currentConnections[key].socket.emit('refreshStats', {guests: 4, rooms: 5, players: 4});
+    allUsers++;
+    if (key.inPlay) {players++;}
   }
+  for (var key in playrooms) {rooms++;}
+  for (var key in currentConnections){currentConnections[key].socket.emit('refreshStats', {guests: allUsers - players, rooms: rooms, players: players});}
   console.log('!! Neue Stats verteilt');
 }
 
@@ -98,11 +101,17 @@ function getWords(set) {
 
 
 
-loadWordsets();
+
+/** MAGIE AB HIER **/
+
+var wordsets = {};
+var playrooms = {};
 var currentConnections = {};
+loadWordsets();
 
 io.on('connection', client => {
   currentConnections[client.id] = {socket: client};
+  currentConnections[client.id].inPlay = false;
   console.log('UserId: ' + client.id + ', UserName: ' + currentConnections[client.id].name + ' | Verbindung mit Server hergestellt');
   sendStats();
 
