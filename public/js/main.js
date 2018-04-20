@@ -19,9 +19,9 @@ var buttons = element('footer-buttons');
 function welcomeInit() {
   clearElement(eingangspunkt);
   clearElement(buttons);
-  createFooterBtn("Erstellen", "m3 left", "green lighten-2", spielraumInit);
-  createFooterBtn("Beitreten", "m3 left", "green lighten-2");
-  createFooterBtn("Konfiguration", "m3 right", "");
+  footerCreateButton("Erstellen", "m3 left", "green lighten-2", spielraumInit);
+  footerCreateButton("Beitreten", "m3 left", "green lighten-2");
+  footerCreateButton("Konfiguration", "m3 right", "", konfigInit);
 
 
   var root = document.createElement('div');
@@ -52,7 +52,7 @@ function spielraumInit(){
   clearElement(eingangspunkt);
   clearElement(buttons);
   clearElement(spielfeld);
-  createFooterBtn("Spiel verlassen", "m12", "green lighten-2", welcomeInit);
+  footerCreateButton("Spiel verlassen", "m12", "green lighten-2", welcomeInit);
 
   var root = document.createElement('div');
   var temp = document.createElement('div');
@@ -81,10 +81,10 @@ function spielraumInit(){
       this.classList.add('green', 'lighten-2');
     });
   }
-  spielerlisteNeubau();
+  spielraumDrawPlayerlist();
 }
 
-function spielerlisteNeubau (){
+function spielraumDrawPlayerlist (){
   clearElement(spielerImRaum);
 
   for (var i = 0; i < 5; i++) {
@@ -115,13 +115,69 @@ function spielerlisteNeubau (){
   }
 }
 
-function spielerlisteAktualisieren(){}
+function spielraumRefreshPlayerlist(){}
 
+
+/** KONFIG **/
+var konfigInput;
+
+function konfigInit() {
+  clearElement(eingangspunkt);
+  clearElement(buttons);
+  eingangspunkt.innerHTML = `
+  <div class="container">
+  <div class="card-panel">
+  <div class="section">
+  <div class="input-field">
+  <select id="konfigInput"></select>
+  <label>Wähle einen zu bearbeitenden Wortsatz</label>
+  </div>
+  <div id="konfigCollection" class="collection"></div>
+  <a id="buttonDeleteWord" class="waves-effect waves-light btn red">Ausgewähltes Wort löschen</a>
+  </div>
+  <div class="divider"></div>
+  <div class="section">
+  <div class="row">
+  <div id="konfigNewWord" class="input-field col m8">
+  <input id="last_name" type="text" class="validate">
+  <label for="last_name">Neues Wort</label>
+  </div>
+  <a id="buttonAddWord" class="waves-effect waves-light btn green lighten-2 col m4 left">Wort hinzufügen</a>
+  <div id="konfigNewWordset" class="input-field col m8">
+  <input id="last_name" type="text" class="validate">
+  <label for="last_name">Neuer Wortsatz</label>
+  </div>
+  <a id="buttonAddWordset" class="waves-effect waves-light btn green lighten-2 col m4">Wortsatz erstellen</a>
+  </div>
+  </div>
+  </div>
+  </div>
+  `;
+  konfigInput = element("konfigInput");
+  footerCreateButton("Hauptmenü", "m12", "green lighten-2", welcomeInit);
+  socket.emit('askWordsetNames');
+}
+
+function konfigDrawWordsets(sets) {
+  for (var i = 0; i < sets.length; i++) {
+    var option = document.createElement("option");
+    option.setAttribute('value',i);
+    if (i == 0) {
+      option.defaultSelected = true;
+    }
+    option.appendChild(document.createTextNode(sets[i]));
+    konfigInput.appendChild(option);
+  }
+  var instance = M.FormSelect.init(konfigInput, "input-field");
+  socket.emit('askWordsetWords',);
+}
+
+function konfigDrawWords(set) {}
 
 
 /** FOOTER **/
 
-function neueStats(data){
+function footerDrawStats(data){
   var guests = 0;
   var rooms = 0;
   var players = 0;
@@ -139,7 +195,7 @@ function neueStats(data){
   element('numberOfPlayers').textContent='| ' + players + ' Spieler |';
 }
 
-function createFooterBtn(text, alignement, buttonColor, callback) {
+function footerCreateButton(text, alignement, buttonColor, callback) {
   var root = document.createElement('span');
   root.className = "col " + alignement;
   var btn = document.createElement('a');
@@ -162,14 +218,8 @@ var socket = io.connect('http://localhost:3000');
 
 if(socket !== undefined){
   welcomeInit();
-  //spielraumInit();
-  //spielerlisteNeubau(spielerImRaum);
-  socket.on('neueStats', data => {neueStats(data); console.log('yepa');});
 
-
-  socket.on('output', function(data){});
-  // Get Status From Server
-  socket.on('status', function(data){});
-  // Handle Input
-  socket.on('cleared', function(){});
+  socket.on('refreshStats', data => {footerDrawStats(data);});
+  socket.on('giveWordsetNames', data => {konfigDrawWordsets(data.sets);});
+  socket.on('giveWordsetWords', data => {konfigDrawWords(data.set);});
 }

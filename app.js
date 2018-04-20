@@ -18,9 +18,9 @@ var wordsets = {};
 
 /** Emitter **/
 
-function sendNeueStats(){
+function sendStats(){
   for (var key in currentConnections){
-    currentConnections[key].socket.emit('neueStats', {guests: 4, rooms: 5, players: 4});
+    currentConnections[key].socket.emit('refreshStats', {guests: 4, rooms: 5, players: 4});
   }
   console.log('!! Neue Stats verteilt');
 }
@@ -34,7 +34,7 @@ function sendNeueStats(){
 /** Auxillary **/
 
 function loadWordsets () {
-  var jsonData = fs.readFileSync("data/wordsets");
+  var jsonData = fs.readFileSync("data/wordsets.json");
   wordsets = JSON.parse(jsonData);
 }
 
@@ -50,6 +50,7 @@ function saveWordsets () {
 function addSet(set) {
   if (wordsets[set] == null) {
     wordsets[set] = {};
+    saveWordsets();
   }
 }
 
@@ -58,6 +59,7 @@ function removeSet(set) {
   var index = wordsets.indexOf(set);
   if (index > -1) {
       wordsets.splice(index, 1);
+      saveWordsets();
   }
 }
 **/
@@ -71,45 +73,48 @@ function addWord(set, word) {
       wordsets[set].words.push(word);
     }
   }
+  saveWordsets();
 }
 
 function removeWord(set, word) {
   var index = wordsets[set].words.indexOf(word);
   if (index > -1) {
       wordsets[set].words.splice(index, 1);
+      saveWordsets();
   }
+}
+
+function getWordsets() {
+  var data = [];
+  for (var name in wordsets){
+    data.push(name);
+  }
+  return data;
+}
+
+function getWords(set) {
+  return wordsets[set].words;
 }
 
 
 
-
-
-
-
-
+loadWordsets();
 var currentConnections = {};
 
-io.on('connection', function (client) {
+io.on('connection', client => {
   currentConnections[client.id] = {socket: client};
   console.log('UserId: ' + client.id + ', UserName: ' + currentConnections[client.id].name + ' | Verbindung mit Server hergestellt');
-  sendNeueStats();
+  sendStats();
 
-  client.on('disconnect', function() {
-    delete currentConnections[client.id];
+  client.on('disconnect', () => {delete currentConnections[client.id];
   });
 
 
   /** WORDSET KONFIG **/
-  client.on('askWordsetNames', function() {
-    var data = [];
-    for (var name in wordsets){
-      data.push(name);
-    }
-    client.socket.emit('giveWordsetNames',data);
+  client.on('askWordsetNames', () => {client.emit('giveWordsetNames',{sets: getWordsets()});
   });
 
-  client.on('askWordsetWords', function(set) {
-    client.socket.emit('giveWordsetWords',wordsets[set].words);
+  client.on('askWordsetWords', set => {client.emit('giveWordsetWords',getWords(set));
   });
 
 
