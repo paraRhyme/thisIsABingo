@@ -133,7 +133,7 @@ function konfigInit() {
   <div class="section">
   <div class="input-field">
   <select id="konfigInput"></select>
-  <label>Wähle einen zu bearbeitenden Wortsatz</label>
+  <label id="konfigWordcount"></label>
   </div>
   <div id="konfigCollection" class="collection"></div>
   <a id="buttonDeleteWord" class="waves-effect waves-light btn red">Ausgewähltes Wort löschen</a>
@@ -217,6 +217,12 @@ function konfigDrawWordsets(sets) {
 function konfigDrawWords(words) {
   clearElement(konfigCollection);
   if (words == null) {return;}
+  var konfigWordcount = element("konfigWordcount");
+  if (words.length == 1) {
+    konfigWordcount.innerHTML = "| 1 Wort im Set |";
+  } else {
+    konfigWordcount.innerHTML = "| " + words.length + " Wörter im Set |";
+  }
   for (var i = 0; i < words.length; i++) {
     var option = document.createElement("a");
     option.className = "collection-item";
