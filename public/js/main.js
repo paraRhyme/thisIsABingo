@@ -120,6 +120,9 @@ function spielraumRefreshPlayerlist(){}
 
 /** KONFIG **/
 var konfigInput;
+var konfigCollection;
+var konfigNewWord;
+var konfigNewWordset;
 
 function konfigInit() {
   clearElement(eingangspunkt);
@@ -138,14 +141,14 @@ function konfigInit() {
   <div class="divider"></div>
   <div class="section">
   <div class="row">
-  <div id="konfigNewWord" class="input-field col m8">
-  <input id="last_name" type="text" class="validate">
-  <label for="last_name">Neues Wort</label>
+  <div class="input-field col m8">
+  <input id="konfigNewWord" type="text" class="validate">
+  <label for="konfigNewWord">Neues Wort</label>
   </div>
   <a id="buttonAddWord" class="waves-effect waves-light btn green lighten-2 col m4 left">Wort hinzufügen</a>
-  <div id="konfigNewWordset" class="input-field col m8">
-  <input id="last_name" type="text" class="validate">
-  <label for="last_name">Neuer Wortsatz</label>
+  <div class="input-field col m8">
+  <input id="konfigNewWordset" type="text" class="validate">
+  <label for="konfigNewWordset">Neuer Wortsatz</label>
   </div>
   <a id="buttonAddWordset" class="waves-effect waves-light btn green lighten-2 col m4">Wortsatz erstellen</a>
   </div>
@@ -154,25 +157,85 @@ function konfigInit() {
   </div>
   `;
   konfigInput = element("konfigInput");
+  konfigCollection = element("konfigCollection");
   footerCreateButton("Hauptmenü", "m12", "green lighten-2", welcomeInit);
   socket.emit('askWordsetNames');
+
+  var buttonDeleteWord = element('buttonDeleteWord');
+  var buttonAddWord = element('buttonAddWord');
+  var buttonAddWordset = element('buttonAddWordset');
+
+  buttonDeleteWord.addEventListener('click', () => {
+    var instance = M.FormSelect.getInstance(konfigInput);
+    var selectedWord;
+    var selectedSet = instance.getSelectedValues();
+    var children = konfigCollection.children;
+    for (var i = 0; i < children.length; i++) {
+      var tableChild = children[i];
+      if (tableChild.classList.contains('active')) {
+        selectedWord = tableChild;
+      }
+    }
+    if (selectedWord == null) {return;}
+    socket.emit('removeWord', {set: selectedSet[0], word: selectedWord.text});
+  });
+
+  buttonAddWord.addEventListener('click', () => {
+    var input = element("konfigNewWord");
+    if (input.value == null || input.value == "") {return;}
+    var instance = M.FormSelect.getInstance(konfigInput);
+    var selectedSet = instance.getSelectedValues();
+    socket.emit('addWord', {set: selectedSet[0], word: input.value});
+  });
+
+  buttonAddWordset.addEventListener('click', () => {
+    var input = element("konfigNewWordset");
+    if (input.value == null || input.value == "") {return;}
+    socket.emit('addWordset', input.value);
+  });
 }
 
 function konfigDrawWordsets(sets) {
+  clearElement(konfigInput);
   for (var i = 0; i < sets.length; i++) {
     var option = document.createElement("option");
-    option.setAttribute('value',i);
-    if (i == 0) {
-      option.defaultSelected = true;
-    }
+    option.setAttribute('value', sets[i]);
     option.appendChild(document.createTextNode(sets[i]));
     konfigInput.appendChild(option);
   }
   var instance = M.FormSelect.init(konfigInput, "input-field");
-  socket.emit('askWordsetWords',);
+  var temp = instance.getSelectedValues();
+  socket.emit('askWordsetWords' ,temp[0]);
+
+  konfigInput.addEventListener('change', () => {
+    instance = M.FormSelect.init(konfigInput, "input-field");
+    temp = instance.getSelectedValues();
+    socket.emit('askWordsetWords' ,temp[0]);
+  });
 }
 
-function konfigDrawWords(set) {}
+function konfigDrawWords(words) {
+  clearElement(konfigCollection);
+  if (words == null) {return;}
+  for (var i = 0; i < words.length; i++) {
+    var option = document.createElement("a");
+    option.className = "collection-item";
+    option.id = "word_" + i;
+    option.setAttribute('href', "#!");
+    option.addEventListener('click', function() {
+      var children = konfigCollection.children;
+      for (var i = 0; i < children.length; i++) {
+        var tableChild = children[i];
+        if (tableChild.classList.contains('active')) {
+          tableChild.classList.toggle('active');
+        }
+      }
+      this.classList.toggle('active');
+    });
+    option.appendChild(document.createTextNode(words[i]));
+    konfigCollection.appendChild(option);
+  }
+}
 
 
 /** FOOTER **/
@@ -221,5 +284,5 @@ if(socket !== undefined){
 
   socket.on('refreshStats', data => {footerDrawStats(data);});
   socket.on('giveWordsetNames', data => {konfigDrawWordsets(data.sets);});
-  socket.on('giveWordsetWords', data => {konfigDrawWords(data.set);});
+  socket.on('giveWordsetWords', data => {konfigDrawWords(data.words);});
 }

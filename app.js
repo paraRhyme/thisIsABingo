@@ -40,7 +40,7 @@ function loadWordsets () {
 
 function saveWordsets () {
   var jsonData = JSON.stringify(wordsets);
-  fs.writeFile("data/wordsets", jsonData, function(err) {
+  fs.writeFile("data/wordsets.json", jsonData, function(err) {
       if (err) {
           console.log(err);
       }
@@ -106,24 +106,15 @@ io.on('connection', client => {
   console.log('UserId: ' + client.id + ', UserName: ' + currentConnections[client.id].name + ' | Verbindung mit Server hergestellt');
   sendStats();
 
-  client.on('disconnect', () => {delete currentConnections[client.id];
-  });
+  client.on('disconnect', () => {delete currentConnections[client.id];});
 
 
   /** WORDSET KONFIG **/
-  client.on('askWordsetNames', () => {client.emit('giveWordsetNames',{sets: getWordsets()});
-  });
-
-  client.on('askWordsetWords', set => {client.emit('giveWordsetWords',getWords(set));
-  });
-
-
-  /**
-  client.on('data', function (somedata) {
-    currentConnections[client.id].data = someData;
-
-  });
-  **/
+  client.on('askWordsetNames', () => {client.emit('giveWordsetNames', {sets: getWordsets()});});
+  client.on('askWordsetWords', set => {client.emit('giveWordsetWords', {words: getWords(set)});});
+  client.on('addWordset', set => {addSet(set); client.emit('giveWordsetNames', {sets: getWordsets()});});
+  client.on('addWord', data => {addWord(data.set, data.word); client.emit('giveWordsetWords', {words: getWords(data.set)});});
+  client.on('removeWord', data => {removeWord(data.set, data.word); client.emit('giveWordsetWords', {words: getWords(data.set)});});
 });
 
 http.listen(3000);
