@@ -19,8 +19,8 @@ var buttons = element('footer-buttons');
 function welcomeInit() {
   clearElement(eingangspunkt);
   clearElement(buttons);
-  footerCreateButton("Erstellen", "m3 left", "green lighten-2", spielraumInit);
-  footerCreateButton("Beitreten", "m3 left", "green lighten-2");
+  footerCreateButton("Erstellen", "m3 left", "green lighten-2", erstellenInit);
+  footerCreateButton("Beitreten", "m3 left", "green lighten-2", beitretenInit);
   footerCreateButton("Konfiguration", "m3 right", "", konfigInit);
 
 
@@ -41,14 +41,11 @@ function welcomeInit() {
 
 /** ERSTELLEN **/
 
-
-/** BEITRETEN **/
-
 var erstellenInput;
 var erstellenStats;
 var erstellenSpielername;
 
-function beitretenInit() {
+function erstellenInit() {
   clearElement(eingangspunkt);
   clearElement(buttons);
   eingangspunkt.innerHTML = `
@@ -56,18 +53,23 @@ function beitretenInit() {
     <div class="card-panel">
       <div class="section">
         <div class="input-field">
-          <select id="erstellenInput"></select>
-          <label id="erstellenStats">| Setname: Testottttt | Spieler: 34234 |</label>
+          <select id="erstellenInput">
+          </select>
+          <label id="erstellenStats"></label>
         </div>
       </div>
       <div class="divider"></div>
       <div class="section">
         <div class="row">
+          <div class="input-field col m12">
+            <input id="erstellenRaumname" type="text" class="validate">
+            <label for="erstellenRaumname">Raumname</label>
+          </div>
           <div class="input-field col m8">
             <input id="erstellenSpielername" type="text" class="validate">
             <label for="erstellenSpielername">Spielername</label>
           </div>
-          <a id="buttonRaumBetreten" class="waves-effect waves-light btn green lighten-2 col m4">Raum betreten</a>
+          <a id="buttonRaumErstellen" class="waves-effect waves-light btn green lighten-2 col m4">Raum erstellen</a>
         </div>
       </div>
     </div>
@@ -77,6 +79,116 @@ function beitretenInit() {
   erstellenStats = element("erstellenStats");
   erstellenSpielername = element("erstellenSpielername");
   footerCreateButton("Hauptmenü", "m12", "green lighten-2", welcomeInit);
+  M.FormSelect.init(erstellenInput, "input-field");
+  //erstellenInput.onchange();
+  socket.emit('askCreate');
+}
+
+function erstellenPopulate(stats) {
+  clearElement(erstellenInput);
+  clearElement(erstellenStats);
+  for (var i = 0; i < stats.length; i++) {
+    var option = document.createElement("option");
+    option.setAttribute('value', stats[i].name);
+    option.appendChild(document.createTextNode(stats[i].name));
+    erstellenInput.appendChild(option);
+  }
+  var instance = M.FormSelect.init(erstellenInput, "input-field");
+  erstellenInput.addEventListener('change', function() {
+    instance = M.FormSelect.init(erstellenInput, "input-field");
+    var key = instance.getSelectedValues();
+    var count;
+    var countText;
+    for (var i = 0; i < stats.length; i++) {
+      if (stats[i].name == key) {
+        count = stats[i].count;
+      }
+    }
+    if (count == 1) {
+      countText = "1 Wort";
+    } else {
+      countText = count + " Wörter";
+    }
+    erstellenStats.innerHTML = 'Gewähltes Wortset | ' + countText;
+  });
+}
+
+
+/** BEITRETEN **/
+
+var beitretenInput;
+var beitretenStats;
+var beitretenSpielername;
+
+function beitretenInit() {
+  clearElement(eingangspunkt);
+  clearElement(buttons);
+  eingangspunkt.innerHTML = `
+  <div class="container">
+    <div class="card-panel">
+      <div class="section">
+        <div class="input-field">
+          <select id="beitretenInput"></select>
+          <label id="beitretenStats"></label>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <div class="section">
+        <div class="row">
+          <div class="input-field col m8">
+            <input id="beitretenSpielername" type="text" class="validate">
+            <label for="erstebeitretenSpielernamellenSpielername">Spielername</label>
+          </div>
+          <a id="buttonRaumBeitreten" class="waves-effect waves-light btn green lighten-2 col m4">Raum betreten</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  `;
+  beitretenInput = element("beitretenInput");
+  beitretenStats = element("beitretenStats");
+  beitretenSpielername = element("beitretenSpielername");
+  footerCreateButton("Hauptmenü", "m12", "green lighten-2", welcomeInit);
+  M.FormSelect.init(beitretenInput, "input-field");
+  buttonRaumBeitreten.addEventListener('click',beitretenJoin);
+  socket.emit('askLobby');
+}
+
+function beitretenPopulate(stats) {
+  clearElement(beitretenInput);
+  clearElement(beitretenStats);
+  if (Object.keys(stats).length === 0 && stats.constructor === Object) {
+    var option = document.createElement("option");
+    option.appendChild(document.createTextNode("Kein Spielraum vorhanden"));
+    beitretenInput.appendChild(option);
+    beitretenInput.setAttribute("disabled", "");
+    beitretenSpielername.setAttribute("disabled", "");
+    buttonRaumBeitreten.classList.add("disabled");
+    M.FormSelect.init(beitretenInput, "input-field");
+    return;
+  }
+  for(var key in stats) {
+    var option = document.createElement("option");
+    option.setAttribute('value', key);
+    option.appendChild(document.createTextNode(key));
+    beitretenInput.appendChild(option);
+  }
+  var instance = M.FormSelect.init(beitretenInput, "input-field");
+  beitretenInput.addEventListener('change', function() {
+    instance = M.FormSelect.init(beitretenInput, "input-field");
+    var key = instance.getSelectedValues();
+    beitretenStats.innerHTML = 'Gewählter Spielraum | Setname: ' + stats[key].wordset + ' | Spieler: ' + stats[key].count;
+  });
+}
+
+function beitretenJoin() {
+  var instance = M.FormSelect.getInstance(beitretenInput);
+  var roomname = instance.getSelectedValues();
+  var playername = beitretenSpielername.value;
+  console.log(roomname + playername);
+  if (playername == "") {return;}
+  socket.emit('join', {roomname: roomname, playername: playername});
+  //spielraumInit(); Listener muss das callen
 }
 
 
@@ -332,4 +444,6 @@ if(socket !== undefined){
   socket.on('refreshStats', data => {footerDrawStats(data);});
   socket.on('giveWordsetNames', data => {konfigDrawWordsets(data.sets);});
   socket.on('giveWordsetWords', data => {konfigDrawWords(data.words);});
+  socket.on('giveLobby', data => {beitretenPopulate(data.stats);});
+  socket.on('giveCreate', data => {erstellenPopulate(data.stats);});
 }

@@ -52,7 +52,7 @@ function saveWordsets () {
 
 function addSet(set) {
   if (wordsets[set] == null) {
-    wordsets[set] = {};
+    wordsets[set] = {words: []};
     saveWordsets();
   }
 }
@@ -99,6 +99,29 @@ function getWords(set) {
   return wordsets[set].words;
 }
 
+function getLobbyStats() {
+  var stats = {};
+  for (var key in playrooms) {
+    stats[key].wordset = playrooms[key].wordset;
+    stats[key].count = playrooms[key].users.length;
+  }
+  return stats;
+}
+
+function getCreateStats() {
+  var stats = [];
+  for (var key in wordsets) {
+    var temp;
+    if (wordsets[key].words == null) {
+      if (temp == null) {temp = 0;}
+    } else {
+      var temp = wordsets[key].words.length;
+    }
+    stats.push({name: key, count: temp});
+  }
+  return stats;
+}
+
 
 
 
@@ -124,6 +147,8 @@ io.on('connection', client => {
   client.on('addWordset', set => {addSet(set); client.emit('giveWordsetNames', {sets: getWordsets()});});
   client.on('addWord', data => {addWord(data.set, data.word); client.emit('giveWordsetWords', {words: getWords(data.set)});});
   client.on('removeWord', data => {removeWord(data.set, data.word); client.emit('giveWordsetWords', {words: getWords(data.set)});});
+  client.on('askLobby', () => {client.emit('giveLobby', {stats: getLobbyStats()})});
+  client.on('askCreate', () => {client.emit('giveCreate', {stats: getCreateStats()})});
 });
 
 http.listen(3000);
