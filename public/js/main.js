@@ -22,7 +22,7 @@ function welcomeInit() {
   footerCreateButton("Erstellen", "m3 left", "green lighten-2", erstellenInit);
   footerCreateButton("Beitreten", "m3 left", "green lighten-2", beitretenInit);
   footerCreateButton("Konfiguration", "m3 right", "", konfigInit);
-
+  socket.emit('playerLeftRoom');
 
   var root = document.createElement('div');
   root.className = "container";
@@ -80,7 +80,7 @@ function erstellenInit() {
   erstellenSpielername = element("erstellenSpielername");
   footerCreateButton("Hauptmenü", "m12", "green lighten-2", welcomeInit);
   M.FormSelect.init(erstellenInput, "input-field");
-  //erstellenInput.onchange();
+  buttonRaumErstellen.addEventListener('click', erstellenCreate);
   socket.emit('askCreate');
 }
 
@@ -111,6 +111,18 @@ function erstellenPopulate(stats) {
     }
     erstellenStats.innerHTML = 'Gewähltes Wortset | ' + countText;
   });
+}
+
+function erstellenCreate() {
+  var instance = M.FormSelect.getInstance(erstellenInput);
+  var chosenSet = instance.getSelectedValues();
+  var playername = erstellenSpielername.value;
+  var roomname = erstellenRaumname.value;
+
+  if (playername == "" || roomname == "") {return;}
+  //console.log(roomname + playername);
+  socket.emit('join', {roomname: roomname, playername: playername, chosenSet: chosenSet[0]});
+  //spielraumInit(); Listener muss das callen
 }
 
 
@@ -150,7 +162,7 @@ function beitretenInit() {
   beitretenSpielername = element("beitretenSpielername");
   footerCreateButton("Hauptmenü", "m12", "green lighten-2", welcomeInit);
   M.FormSelect.init(beitretenInput, "input-field");
-  buttonRaumBeitreten.addEventListener('click',beitretenJoin);
+  buttonRaumBeitreten.addEventListener('click', beitretenJoin);
   socket.emit('askLobby');
 }
 
@@ -185,14 +197,17 @@ function beitretenJoin() {
   var instance = M.FormSelect.getInstance(beitretenInput);
   var roomname = instance.getSelectedValues();
   var playername = beitretenSpielername.value;
-  console.log(roomname + playername);
+
   if (playername == "") {return;}
-  socket.emit('join', {roomname: roomname, playername: playername});
+  //console.log(roomname + playername);
+  socket.emit('join', {roomname: roomname[0], playername: playername});
   //spielraumInit(); Listener muss das callen
 }
 
 
 /** SPIELRAUM **/
+
+var clicked = [];
 
 var spielerImRaum = document.createElement('ul');
 spielerImRaum.id = "spielerImRaum";
@@ -201,10 +216,12 @@ var spielfeld = document.createElement('ul');
 spielfeld.id = "spielfeld";
 spielfeld.className = "row";
 
-function spielraumInit(){
+function spielraumInit(words, playfield){
+  clicked = [];
   clearElement(eingangspunkt);
   clearElement(buttons);
   clearElement(spielfeld);
+  clearElement(spielerImRaum);
   footerCreateButton("Spiel verlassen", "m12", "green lighten-2", welcomeInit);
 
   var root = document.createElement('div');
@@ -215,16 +232,16 @@ function spielraumInit(){
   root.appendChild(temp);
   root.appendChild(spielerImRaum);
   eingangspunkt.appendChild(root);
-  for (var i = 0; i < 36; i++) {
+  for (var i = 0; i < playfield.length; i++) {
     var t1 = document.createElement('li');
     t1.className = "col m2";
     var t2 = document.createElement('div');
     t2.className = "spielfeldKarte card-panel center valign-wrapper hoverable waves-effect waves-green";
     var t3 = document.createElement('span');
-    t3.id = "Word" + i;
+    t3.id = i;
     var centerer = document.createElement('span');
     centerer.className = "centerer";
-    t3.appendChild(document.createTextNode("Hund" + i));
+    t3.appendChild(document.createTextNode(words[playfield[i]]));
     t2.appendChild(centerer);
     t2.appendChild(t3);
     t1.appendChild(t2);
@@ -233,45 +250,88 @@ function spielraumInit(){
     t2.addEventListener('click',function() {
       this.classList.add('green', 'lighten-2');
     });
+    t2.addEventListener('click',function() {
+      spielraumClickWord(this.children[1].id);
+    });
   }
-  spielraumDrawPlayerlist();
+  //spielraumDrawPlayerlist();
 }
 
-function spielraumDrawPlayerlist (){
-  clearElement(spielerImRaum);
+function spielraumDrawPlayerlist (name, clicked){
+  var card = element(name);
+  if (card == null) {
+      var spielerCard = document.createElement('li');
+      spielerCard.id = name;
+      var t1 = document.createElement('div');
+      t1.className = "card scale-transition";
+      var t2 = document.createElement('div');
+      t2.className = "card-content";
+      var t4 = document.createElement('span');
+      t4.className = "card-title";
+      t4.appendChild(document.createTextNode(name));
 
-  for (var i = 0; i < 5; i++) {
-    var spielerCard = document.createElement('li');
-    spielerCard.id = "player" + i;
-    var t1 = document.createElement('div');
-    t1.className = "card scale-transition";
-    var t2 = document.createElement('div');
-    t2.className = "card-content";
-    var t4 = document.createElement('span');
-    t4.className = "card-title";
-    t4.appendChild(document.createTextNode("Tom"));
-
-    var t3 = document.createElement('ul');
-    t3.className = "row";
-    t3.id = "status" + i;
-    for (var j = 0; j < 36; j++) {
-      var tt1 = document.createElement('li');
-      tt1.className = "col m2 blue-grey";
-      t3.appendChild(tt1);
+      var t3 = document.createElement('ul');
+      t3.className = "row";
+      t3.id = "status" + i;
+      for (var j = 0; j < 36; j++) {
+        var tt1 = document.createElement('li');
+        tt1.className = "col m2 blue-grey";
+        tt1.id = name + j;
+        t3.appendChild(tt1);
+      }
+      t2.appendChild(t4);
+      t2.appendChild(t3);
+      t1.appendChild(t2);
+      spielerCard.appendChild(t1);
+      spielerImRaum.appendChild(spielerCard);
+  }
+    for (var i = 0; i < clicked.length; i++) {
+      var txt = name + clicked[i];
+      var temp = element(txt);
+      temp.classList.remove("blue-grey");
+      temp.classList.add("red");
+      temp.classList.add("lighten-2");
     }
 
-    t2.appendChild(t4);
-    t2.appendChild(t3);
-    t1.appendChild(t2);
-    spielerCard.appendChild(t1);
-    spielerImRaum.appendChild(spielerCard);
+}
+
+function spielraumClickWord(id) {
+  if (clicked.indexOf(Number(id)) == -1) {
+    clicked.push(Number(id));
+    socket.emit('clicked', {clicked: clicked});
+  }
+
+  for (var i = 0; i < 6; i++) {
+    if (clicked.indexOf(i * 6 + 0) >= 0 && clicked.indexOf(i * 6 + 1) >= 0 && clicked.indexOf(i * 6 + 2) >= 0 && clicked.indexOf(i * 6 + 3) >= 0 && clicked.indexOf(i * 6 + 4) >= 0 && clicked.indexOf(i * 6 + 5) >= 0) {
+      spielraumFin("Spiel gewonnen");
+      socket.emit('gameWon');
+    }
+  }
+
+  for (var i = 0; i < 6; i++) {
+    if (clicked.indexOf(0 + i) >= 0 && clicked.indexOf(6 + i) >= 0 && clicked.indexOf(12 + i) >= 0 && clicked.indexOf(18 + i) >= 0 && clicked.indexOf(24 + i) >= 0 && clicked.indexOf(30 + i) >= 0) {
+      spielraumFin("Spiel gewonnen");
+      socket.emit('gameWon');
+    }
   }
 }
 
-function spielraumRefreshPlayerlist(){}
+function spielraumFin(text) {
+  clearElement(eingangspunkt);
+  eingangspunkt.innerHTML = `
+  <div class="row">
+    <div class="col s12">
+      <div class="card-panel">
+        <span>` + text + `</span>
+      </div>
+    </div>
+  </div>
+  `;
+}
 
 
 /** KONFIG **/
+
 var konfigInput;
 var konfigCollection;
 var konfigNewWord;
@@ -436,7 +496,8 @@ function footerCreateButton(text, alignement, buttonColor, callback) {
 
 /** MAGIE AB HIER **/
 
-var socket = io.connect('http://localhost:3000');
+//var socket = io.connect('http://localhost:3000');
+var socket = io.connect('192.168.178.92:3000');
 
 if(socket !== undefined){
   welcomeInit();
@@ -446,4 +507,7 @@ if(socket !== undefined){
   socket.on('giveWordsetWords', data => {konfigDrawWords(data.words);});
   socket.on('giveLobby', data => {beitretenPopulate(data.stats);});
   socket.on('giveCreate', data => {erstellenPopulate(data.stats);});
+  socket.on('gameStart', data => {spielraumInit(data.words, data.playfield)});
+  socket.on('clicked', (data) => {spielraumDrawPlayerlist(data.name, data.clicked);});
+  socket.on('gameLost', () => {spielraumFin("Spiel verloren");});
 }
