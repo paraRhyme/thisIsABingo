@@ -1,14 +1,8 @@
 /** GLOBAL **/
 
-function element(id) {
-  return document.getElementById(id);
-}
+function element(id) {return document.getElementById(id);}
 
-function clearElement(element) {
-  while (element.firstChild) {
-    element.removeChild(element.firstChild);
-  }
-}
+function clearElement(element) {while (element.firstChild) {element.removeChild(element.firstChild);}}
 
 var eingangspunkt = element('eingangspunkt');
 var buttons = element('footer-buttons');
@@ -50,29 +44,29 @@ function erstellenInit() {
   clearElement(buttons);
   eingangspunkt.innerHTML = `
   <div class="container">
-    <div class="card-panel">
-      <div class="section">
-        <div class="input-field">
-          <select id="erstellenInput">
-          </select>
-          <label id="erstellenStats"></label>
-        </div>
-      </div>
-      <div class="divider"></div>
-      <div class="section">
-        <div class="row">
-          <div class="input-field col m12">
-            <input id="erstellenRaumname" type="text" class="validate">
-            <label for="erstellenRaumname">Raumname</label>
-          </div>
-          <div class="input-field col m8">
-            <input id="erstellenSpielername" type="text" class="validate">
-            <label for="erstellenSpielername">Spielername</label>
-          </div>
-          <a id="buttonRaumErstellen" class="waves-effect waves-light btn green lighten-2 col m4">Raum erstellen</a>
-        </div>
-      </div>
-    </div>
+  <div class="card-panel">
+  <div class="section">
+  <div class="input-field">
+  <select id="erstellenInput">
+  </select>
+  <label id="erstellenStats"></label>
+  </div>
+  </div>
+  <div class="divider"></div>
+  <div class="section">
+  <div class="row">
+  <div class="input-field col m12">
+  <input id="erstellenRaumname" type="text" class="validate">
+  <label for="erstellenRaumname">Raumname</label>
+  </div>
+  <div class="input-field col m8">
+  <input id="erstellenSpielername" type="text" class="validate">
+  <label for="erstellenSpielername">Spielername</label>
+  </div>
+  <a id="buttonRaumErstellen" class="waves-effect waves-light btn green lighten-2 col m4">Raum erstellen</a>
+  </div>
+  </div>
+  </div>
   </div>
   `;
   erstellenInput = element("erstellenInput");
@@ -137,24 +131,24 @@ function beitretenInit() {
   clearElement(buttons);
   eingangspunkt.innerHTML = `
   <div class="container">
-    <div class="card-panel">
-      <div class="section">
-        <div class="input-field">
-          <select id="beitretenInput"></select>
-          <label id="beitretenStats"></label>
-        </div>
-      </div>
-      <div class="divider"></div>
-      <div class="section">
-        <div class="row">
-          <div class="input-field col m8">
-            <input id="beitretenSpielername" type="text" class="validate">
-            <label for="erstebeitretenSpielernamellenSpielername">Spielername</label>
-          </div>
-          <a id="buttonRaumBeitreten" class="waves-effect waves-light btn green lighten-2 col m4">Raum betreten</a>
-        </div>
-      </div>
-    </div>
+  <div class="card-panel">
+  <div class="section">
+  <div class="input-field">
+  <select id="beitretenInput"></select>
+  <label id="beitretenStats"></label>
+  </div>
+  </div>
+  <div class="divider"></div>
+  <div class="section">
+  <div class="row">
+  <div class="input-field col m8">
+  <input id="beitretenSpielername" type="text" class="validate">
+  <label for="erstebeitretenSpielernamellenSpielername">Spielername</label>
+  </div>
+  <a id="buttonRaumBeitreten" class="waves-effect waves-light btn green lighten-2 col m4">Raum betreten</a>
+  </div>
+  </div>
+  </div>
   </div>
   `;
   beitretenInput = element("beitretenInput");
@@ -260,38 +254,38 @@ function spielraumInit(words, playfield){
 function spielraumDrawPlayerlist (name, clicked){
   var card = element(name);
   if (card == null) {
-      var spielerCard = document.createElement('li');
-      spielerCard.id = name;
-      var t1 = document.createElement('div');
-      t1.className = "card scale-transition";
-      var t2 = document.createElement('div');
-      t2.className = "card-content";
-      var t4 = document.createElement('span');
-      t4.className = "card-title";
-      t4.appendChild(document.createTextNode(name));
+    var spielerCard = document.createElement('li');
+    spielerCard.id = name;
+    var t1 = document.createElement('div');
+    t1.className = "card scale-transition";
+    var t2 = document.createElement('div');
+    t2.className = "card-content";
+    var t4 = document.createElement('span');
+    t4.className = "card-title";
+    t4.appendChild(document.createTextNode(name));
 
-      var t3 = document.createElement('ul');
-      t3.className = "row";
-      t3.id = "status" + i;
-      for (var j = 0; j < 36; j++) {
-        var tt1 = document.createElement('li');
-        tt1.className = "col m2 blue-grey";
-        tt1.id = name + j;
-        t3.appendChild(tt1);
-      }
-      t2.appendChild(t4);
-      t2.appendChild(t3);
-      t1.appendChild(t2);
-      spielerCard.appendChild(t1);
-      spielerImRaum.appendChild(spielerCard);
-  }
-    for (var i = 0; i < clicked.length; i++) {
-      var txt = name + clicked[i];
-      var temp = element(txt);
-      temp.classList.remove("blue-grey");
-      temp.classList.add("red");
-      temp.classList.add("lighten-2");
+    var t3 = document.createElement('ul');
+    t3.className = "row";
+    t3.id = "status" + i;
+    for (var j = 0; j < 36; j++) {
+      var tt1 = document.createElement('li');
+      tt1.className = "col m2 blue-grey";
+      tt1.id = name + j;
+      t3.appendChild(tt1);
     }
+    t2.appendChild(t4);
+    t2.appendChild(t3);
+    t1.appendChild(t2);
+    spielerCard.appendChild(t1);
+    spielerImRaum.appendChild(spielerCard);
+  }
+  for (var i = 0; i < clicked.length; i++) {
+    var txt = name + clicked[i];
+    var temp = element(txt);
+    temp.classList.remove("blue-grey");
+    temp.classList.add("red");
+    temp.classList.add("lighten-2");
+  }
 
 }
 
@@ -320,11 +314,11 @@ function spielraumFin(text) {
   clearElement(eingangspunkt);
   eingangspunkt.innerHTML = `
   <div class="row">
-    <div class="col s12">
-      <div class="card-panel">
-        <span>` + text + `</span>
-      </div>
-    </div>
+  <div class="col s12">
+  <div class="card-panel">
+  <span>` + text + `</span>
+  </div>
+  </div>
   </div>
   `;
 }
@@ -496,12 +490,9 @@ function footerCreateButton(text, alignement, buttonColor, callback) {
 
 /** MAGIE AB HIER **/
 
-//var socket = io.connect('http://localhost:3000');
-var socket = io.connect('192.168.178.92:3000');
+var socket = io.connect('http://localhost:3000');
 
 if(socket !== undefined){
-  welcomeInit();
-
   socket.on('refreshStats', data => {footerDrawStats(data);});
   socket.on('giveWordsetNames', data => {konfigDrawWordsets(data.sets);});
   socket.on('giveWordsetWords', data => {konfigDrawWords(data.words);});
@@ -510,4 +501,6 @@ if(socket !== undefined){
   socket.on('gameStart', data => {spielraumInit(data.words, data.playfield)});
   socket.on('clicked', (data) => {spielraumDrawPlayerlist(data.name, data.clicked);});
   socket.on('gameLost', () => {spielraumFin("Spiel verloren");});
+
+  welcomeInit();
 }

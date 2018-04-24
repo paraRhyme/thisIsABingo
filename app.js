@@ -13,7 +13,7 @@ app.get('/', function(req, res,next) {
 });
 
 
-/** Emitter **/
+/** Footer **/
 
 function sendStats(){
   var allUsers = 0;
@@ -21,7 +21,6 @@ function sendStats(){
   var rooms = 0;
   for (var key in currentConnections){
     allUsers++;
-    //console.log(key);
     if (currentConnections[key].inPlay) {players++;}
   }
   // Leere Räume entfernen
@@ -36,12 +35,7 @@ function sendStats(){
 }
 
 
-/** Receiver **/
-
-
-
-
-/** Auxillary **/
+/** Wordset **/
 
 function loadWordsets () {
   var jsonData = fs.readFileSync("data/wordsets.json");
@@ -51,9 +45,9 @@ function loadWordsets () {
 function saveWordsets () {
   var jsonData = JSON.stringify(wordsets);
   fs.writeFile("data/wordsets.json", jsonData, function(err) {
-      if (err) {
-          console.log(err);
-      }
+    if (err) {
+      console.log(err);
+    }
   });
 }
 
@@ -66,11 +60,11 @@ function addSet(set) {
 
 /**
 function removeSet(set) {
-  var index = wordsets.indexOf(set);
-  if (index > -1) {
-      wordsets.splice(index, 1);
-      saveWordsets();
-  }
+var index = wordsets.indexOf(set);
+if (index > -1) {
+wordsets.splice(index, 1);
+saveWordsets();
+}
 }
 **/
 
@@ -89,8 +83,8 @@ function addWord(set, word) {
 function removeWord(set, word) {
   var index = wordsets[set].words.indexOf(word);
   if (index > -1) {
-      wordsets[set].words.splice(index, 1);
-      saveWordsets();
+    wordsets[set].words.splice(index, 1);
+    saveWordsets();
   }
 }
 
@@ -105,6 +99,9 @@ function getWordsets() {
 function getWords(set) {
   return wordsets[set].words;
 }
+
+
+/** Raum erstellen und beitreten **/
 
 function getLobbyStats() {
   var stats = {};
@@ -130,6 +127,9 @@ function getCreateStats() {
   return stats;
 }
 
+
+/** Logik für Spielraum **/
+
 function playerJoin(clientId, roomname, playername, chosenSet) {
   var user = currentConnections[clientId];
   user.name = playername;
@@ -142,17 +142,16 @@ function playerJoin(clientId, roomname, playername, chosenSet) {
     playrooms[roomname].users.push(clientId);
   }
   generatePlay(clientId, chosenSet);
-  //console.log(user.playfield);
   currentConnections[clientId].socket.emit('gameStart', {words: wordsets[chosenSet].words, playfield: user.playfield});
   sendStats();
 }
 
 function shuffle(a) {
-    for (let i = a.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [a[i], a[j]] = [a[j], a[i]];
-    }
-    return a;
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
 }
 
 function generatePlay(clientId, chosenSet) {
@@ -237,7 +236,6 @@ io.on('connection', client => {
   });
 
 
-  /** WORDSET KONFIG **/
   client.on('askWordsetNames', () => {client.emit('giveWordsetNames', {sets: getWordsets()});});
   client.on('askWordsetWords', set => {client.emit('giveWordsetWords', {words: getWords(set)});});
   client.on('addWordset', set => {addSet(set); client.emit('giveWordsetNames', {sets: getWordsets()});});
